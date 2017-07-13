@@ -1,0 +1,32 @@
+.login{
+	float:right;
+}
+
+.loginBox{
+	padding: 5px;
+	position: fixed;
+	top: 10px;
+	right: 10px;
+	max-width: 200px;
+	max-height: 200px;
+	z-index: 1000;
+	background-color: grey;
+	display: none;
+}
+.loginBox label{
+	float:left;
+	width: 100%;
+	max-width: 200px;
+}
+.loginBox input{
+	float:left;
+	max-width: 200px;
+}
+.loginBox input[type=button]{
+	float:right;
+	padding: 3px;
+	margin: 5px;
+}
+#logoutSpan{
+	cursor:pointer;
+}

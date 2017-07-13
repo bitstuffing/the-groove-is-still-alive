@@ -1,0 +1,110 @@
+ol {
+    counter-reset: li; /* counter */
+    list-style: none; /* remove default numbering */
+    *list-style: decimal; /* numbering for IE issues */
+    font: 15px 'trebuchet MS', 'lucida sans';
+    padding: 0;
+    margin-bottom: 4em;
+    text-shadow: 0 1px 0 rgba(255,255,255,.5);
+	overflow: hidden;
+	margin-right: 50px;
+}
+
+.rounded-list{
+	cursor: pointer;
+    position: relative;
+    display: block;
+    padding: .4em .4em .4em 2em;
+    *padding: .4em;
+    /*margin: .5em 0;*/
+	margin: 5px;
+	left: 1.5em;
+    background: #ddd;
+    color: #444;
+    text-decoration: none;
+    border-radius: .3em;
+    transition: all .3s ease-out;
+    max-width:80%;
+}
+
+.rounded-list:hover{
+    background: #eee;
+}
+
+.rounded-list:hover:before{
+    /*transform: rotate(360deg);  */
+}
+
+.rounded-list:before{
+    content: '';*/
+    counter-increment: li;
+    position: absolute; 
+    top: 50%;
+	margin-left: -3em;
+    margin-top: -1.3em;
+    background: #dedede;
+    height: 2em;
+    width: 2em;
+    line-height: 2em;
+    border: .3em solid #fff;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 2em;
+    transition: all .3s ease-out;
+}
+
+.draggable{
+	padding: .4em .4em .4em 2em;
+	margin: 5px;
+	color: #444;
+	background: #ddd;
+	border-radius: .3em;
+}
+
+.song{
+	margin: 3px;
+    margin-right: 3px;
+	border: 1px solid black;
+	cursor: pointer;
+	padding: 3px;
+	float: left;
+	width: 70%;
+	margin-right: 20%;
+}
+
+.totalSongs{
+	text-align: left;
+	float: left;
+	width: 70%;
+	margin-top:10px;
+	margin-bottom:5px;
+}
+
+
+.albumContent{
+	padding: 5px;
+	float: left;
+}
+
+.albumImage{
+	float:left;
+}
+
+.albumImage img{
+	float: left;
+	width: 170px;
+}
+
+#albumMetadata{
+	padding: 5px;
+}
+
+.albumMetadata{
+	float: left;
+	width: 50%;
+	margin-left: 15px;
+}
+
+#songsList{
+	float: left;
+}
