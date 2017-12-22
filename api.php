@@ -60,6 +60,9 @@ switch ($action) {
 	case "getLists":
 		echo UserUtils::displayUserLists();
 		break;
+	case "deleteList":
+		echo UserUtils::deleteList($name);
+		break;
 	case "getList":
 		echo UserUtils::getList($name);
 		break;

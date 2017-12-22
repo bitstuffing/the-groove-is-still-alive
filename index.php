@@ -19,7 +19,7 @@ Logger::log(preg_replace('/[\s+]/','',(preg_replace("/[\n\r]/","",(var_export($_
 		for($i=0;$i<sizeof($scriptList);$i++){ ?>
 			<script type="text/javascript" src="<?php echo $scriptList[$i]; ?>" ></script>
 		<?php }	?>
-
+    
 	</head>
 		<body onresize="responsive();">
 		<div id="header">

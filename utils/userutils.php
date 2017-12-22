@@ -93,6 +93,24 @@ class UserUtils{
 		return json_encode($sections);
 	}
 	
+	public static function deleteList($name){
+		$response = array();
+		$response["status"] = "ko";
+		if(isset($_SESSION["login"]) && strlen($name)>0 && strpos($name,"..")==false){
+			Logger::debug("Deleting user list $name for user: ".$_SESSION["login"]);
+			$response = array();
+			$response["status"] = "fail";
+			$response["list"] = $name;
+			$username = $_SESSION["login"];
+			$home = isset($_SERVER['USERS_HOME']) ? $_SERVER['USERS_HOME'] : '';
+			if(file_exists($home.$username."/lists/".$name.".xml") ){
+				unlink($home.$username."/lists/".$name.".xml");
+				$response["status"] = "ok";
+			}
+		}
+		return json_encode($response);
+	}
+	
 	public static function storeList($list,$name){
 		if(isset($_SESSION["login"]) && strlen($name)>0 && strpos($name,"..")==false){
 			Logger::debug("Storing user list $name for user: ".$_SESSION["login"]);

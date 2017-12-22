@@ -219,6 +219,7 @@ function loadEvents(){
 	$(document).on("mouseup",function(event){
 		event.stopPropagation();
 		if($("#mousedown").length>0){
+			//clearContextMenu();
 			moveSlider(event.pageX,event.pageY);
 			$("#mousedown").each(function(){
 				$(this).remove();
@@ -255,7 +256,10 @@ function loadEvents(){
 	});
 	//avoid browser default drag on a html img element
 	$(document).on('dragstart', function(event) { event.preventDefault(); });
-	$(document).contextmenu(function() { return false; });
+	$(document).contextmenu(function(ev) { 
+		contextMenu(ev);
+		return false; 
+	});
 	
 	$(document).ajaxStart(function () {
 		$("#loadingDiv").show();
@@ -274,6 +278,9 @@ function toast(message){
 function launchAction(action){
 	if(!$("#loadingDiv").is(':visible')){
 		var dataPost = {"action":action};
+		if($("#listName").length>0){
+			dataPost["name"] = $("#listName").val();
+		}
 		$.ajax({
 		    url: "api.php",
 		    type: "POST",
@@ -325,14 +332,66 @@ function editList(name){
 	$.getJSON("api.php",{"action":"getList","name":name},function(response){
 		toast("Edited "+name+" list");
 		console.log(response);
+		var songs = [];
+		for(var key in response){
+			songs.push(response[key]);
+		}
+		if(name.indexOf(".")>0){
+			name = name.substring(0,name.lastIndexOf("."));
+		}
+		editListSongs(name,songs);
 	});
 }
 
 function seeList(name){
 	$.getJSON("api.php",{"action":"getList","name":name},function(response){
 		toast("Shown "+name+" list");
-		console.log(response);
+		$("#content").html("<div id='songsList'></div>");
+		$.each(response, function(i, element){
+			var content = "<input type='hidden' id='"+i+"' value='"+element+"' />";
+			var title = element.substring(element.lastIndexOf("/")+1);
+			var startsWithNumber = /^\d/.test(title[0]);
+			if(startsWithNumber){ //remove track numbers
+				title = title.substring(title.indexOf(" ")+1);
+			}
+			if(title.indexOf(".")>0){
+				title = title.substring(0,title.lastIndexOf("."));
+			}
+			content += title;
+			var songElement = $("<div class='song'>"+content+"</div>");
+			//toast("appending to list "+title);
+			//var title = $(this).text();
+			//var path = $(this).find("input").val();
+			var description = "";
+			var image = "https://cdn0.iconfinder.com/data/icons/simple-icons-4/512/music.png";
+			var author = "";
+			var path = element;
+			songElement.on("click",{"author":"","time":description,"text":title,"image":image,"buttonContent":author,"audioTrackUrl":path,"draggable":true},drawTrack);
+			$("#songsList").append(songElement);
+		});
 	});
+}
+
+function deleteList(){
+	$("body").append('<div id="dialog" title="Confirmation">Are you sure about this?</div>');
+	$("#dialog").dialog({
+    	modal: true,
+        bgiframe: true,
+        /*width: 500,
+        height: 200,*/
+        autoOpen: true,
+    });
+    
+    $("#dialog").dialog('option', 'buttons', {
+        "Confirm" : function() {
+            launchAction('deleteList');
+            $(this).dialog("close");
+            launchAction('editLists');
+        },
+        "Cancel" : function() {
+            $(this).dialog("close");
+        }
+    });
 }
 
 function saveList(){
@@ -340,12 +399,54 @@ function saveList(){
 	console.log("serialized: "+values);
 	var listName = $("#listName").val();
 	$.getJSON("api.php",{"action":"saveList","name":listName,"list":values},function(response){
-		console.log("list stored done!");
+		toast("The list '"+name+"' was stored succesfully!");
+		$("#loadingDiv").hide();
+		launchAction('editLists');
 	});
 }
 
-function newList(){
+function editListSongs(name,songs){
 	$("#content").html("<div id='formList'></div>");
+	$("#formList").html("<div id='newList'></div>");
+	$("#newList").append("<label for='listName' >List name:</label>");
+	if(name!=undefined && name.length>0){
+		$("#newList").append("<input type='text' id='listName' disabled value='"+name+"'/>");
+	}else{
+		$("#newList").append("<input type='text' id='listName' />");
+	}
+	$("#newList").append("<input type='button' id='saveListButton' onclick='saveList();' value='Save' ></input>");
+	if(name!=undefined && name.length>0){
+		$("#newList").append("<input type='button' id='deleteListButton' onclick='deleteList();' value='Delete' ></input>");
+	}
+	$("#formList").append("<div id='newList2'></div>");
+	$("#content").append("<div id='listContentDiv'></div>");
+	$("#listContentDiv").append("<select multiple='multiple' id='listContent'></select>");
+	$.getJSON("api.php",{"action":"getAlbums"},function(response){
+		$("#newList2").append("<label for='albums' >From Album:</label>");
+		$("#newList2").append("<select onchange='drawAlbumContentToNewList();' id='albums'><option>No album selected</option></select>");
+		for(var i=0;i<response.length;i++){
+			$("#albums").append("<option value='"+response[i]+"'>"+response[i]+"</option>");
+		}
+	});
+	if(name!=undefined && name.length>0){
+		for(var i=0;i<songs.length;i++){
+			var element = songs[i];
+			var title = element.substring(element.lastIndexOf("/")+1);
+			var startsWithNumber = /^\d/.test(title[0]);
+			if(startsWithNumber){ //remove track numbers
+				title = title.substring(title.indexOf(" ")+1);
+			}
+			if(title.indexOf(".")>0){
+				title = title.substring(0,title.lastIndexOf("."));
+			}
+			$("#listContent").append("<option value='"+element+"'>"+title+"</option>");
+		}
+	}
+}
+
+function newList(){
+	editListSongs("",[]);
+	/*$("#content").html("<div id='formList'></div>");
 	$("#formList").html("<div id='newList'></div>");
 	$("#newList").append("<label for='listName' >List name:</label>");
 	$("#newList").append("<input type='text' id='listName' />");
@@ -359,7 +460,7 @@ function newList(){
 		for(var i=0;i<response.length;i++){
 			$("#albums").append("<option value='"+response[i]+"'>"+response[i]+"</option>");
 		}
-	});
+	});*/
 }
 
 function drawAlbumContentToNewList(){
@@ -525,4 +626,37 @@ function drawSections(){
 		$("#sections").append('<div id="loadingDiv" class="ld ld-ring ld-spin-fast huge"></div>');
 		$("#loadingDiv").hide();
 	});
+}
+
+
+function contextMenu(e){
+	clearContextMenu();
+	$("body").append("<div id='contextBox' class='contextMenu' onmouseout='clearContextMenu();'></div>");
+	$("#contextBox").hide();
+	if($("article.element").length>0){
+		$("#contextBox").append("<div id='clearPlaylist' class='contextOption' onclick='clearPlaylist();' >Clear playlist</div>");
+	}
+	if(e.data!=null && e.data.length>0){
+		//TODO
+	}
+	if($(".contextOption").length>0){
+		$("#contextBox").css({left:e.pageX-15, top:e.pageY-15}); //,"position":"fixed","z-index":"1000000"
+		$("#contextBox").fadeIn("fast");
+		//toast("Context was launched!");
+	}else{
+		$("#contextBox").remove();
+	}
+}
+
+function clearPlaylist(){
+	//article class='element'
+	$("article.element").each(function(){
+		$(this).remove();
+	});
+	clearContextMenu();
+}
+
+function clearContextMenu(){
+	$("#contextBox").fadeOut("fast");
+	$("#contextBox").remove();
 }

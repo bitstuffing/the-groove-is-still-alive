@@ -187,3 +187,20 @@ li {
     margin: 0 0 12px 0;
     box-shadow: 1px 1px 3px 2px rgba(0, 0, 0, 0.35);
 }
+.contextMenu{
+	min-width: 50px;
+	position: fixed;
+	z-index: 10000;
+	border: 1px solid #555555;
+}
+
+.contextOption{
+	color: #555555;
+	background-color: #AAAAAA;
+	cursor: pointer;
+	padding: 3px;
+}
+.contextOption:hover{
+	background-color: #555555;
+	color: #AAAAAA;
+}
